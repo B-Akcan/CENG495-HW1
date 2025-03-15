@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+const { Rating, Review } = require("./commonModels")
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -13,23 +14,18 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    ratings: [{
-        type: Map,
-        of: {
-            type: Number,
-            enum: Array(10).fill().map((_, i) => i + 1)
-        },
+    isAdmin: {
+        type: Boolean,
+        default: false
+    },
+    ratings: {
+        type: [Rating],
         default: []
-    }],
-    reviews: [{
-        type: Map,
-        of: {
-            type: String,
-            minLength: 3,
-            maxLength: 500
-        },
+    },
+    reviews: {
+        type: [Review],
         default: []
-    }]
+    }
 })
 
 module.exports = mongoose.model("User", userSchema, "User")

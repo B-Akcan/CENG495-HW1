@@ -26,7 +26,7 @@ userRouter.get("/:username", async (req, res) => {
         return res.status(401).json({ error: "You are not authorized to do this." })
     }
 
-    if (!user || user.username !== req.params.username) {
+    if (!user || (!user.isAdmin && user.username !== req.params.username)) {
         return res.status(401).json({ error: "You are not authorized to do this." })
     }
 
@@ -47,7 +47,7 @@ userRouter.delete("/:username", async (req, res) => {
         return res.status(401).json({ error: "You are not authorized to do this." })
     }
 
-    if (!user || user.username !== req.params.username) {
+    if (!user || (!user.isAdmin && user.username !== req.params.username)) {
         return res.status(401).json({ error: "You are not authorized to do this." })
     }
 
