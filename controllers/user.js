@@ -1,6 +1,8 @@
 const userRouter = require("express").Router()
 const argon2 = require("argon2")
 const User = require("../models/user")
+const Rating = require("../models/rating")
+const Review = require("../models/review")
 const middleware = require("../utils/middleware")
 
 userRouter.post("/", async (req, res) => {
@@ -30,10 +32,13 @@ userRouter.get("/:username", async (req, res) => {
         return res.status(401).json({ error: "You are not authorized to do this." })
     }
 
+    const username = user.username
+    const ratings = await Rating.find({ username: username }, { itemName: 1, rating: 1 })
+    const reviews = await Review.find({ username: username }, { itemName: 1, review: 1 })
     const userToReturn = {
-        username: user.username,
-        ratings: user.ratings,
-        reviews: user.reviews
+        username,
+        ratings,
+        reviews
     }
     return res.status(200).json(userToReturn)
 })
@@ -51,7 +56,10 @@ userRouter.delete("/:username", async (req, res) => {
         return res.status(401).json({ error: "You are not authorized to do this." })
     }
 
+    await Rating.deleteMany({ username: user.username })
+    await Review.deleteMany({ username: user.username })
     await User.findByIdAndDelete(user._id.toString())
+    
     return res.status(200).json({ info: `User '${user.username}' was deleted.` })
 })
 

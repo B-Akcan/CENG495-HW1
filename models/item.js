@@ -1,19 +1,16 @@
 const mongoose = require("mongoose")
-const { Rating, Review } = require("./commonModels")
 
 const itemSchema = new mongoose.Schema({
     category: {
-        type: Map,
-        of: {
-            type: String,
-            enum: ["Vinyls", "Antique Furniture", "GPS Sport Watches", "Running Shoes"]
-        }
+        type: String,
+        enum: ["Vinyls", "Antique Furniture", "GPS Sport Watches", "Running Shoes"]
     },
     name: {
         type: String,
         minLength: 3,
         maxLength: 50,
-        required: true
+        required: true,
+        unique: true
     },
     description: {
         type: String,
@@ -57,14 +54,6 @@ const itemSchema = new mongoose.Schema({
         minLength: 3,
         maxLength: 30,
         required: false
-    },
-    ratings: {
-        type: [Rating],
-        default: []
-    },
-    reviews: {
-        type: [Review],
-        default: []
     }
 })
 

@@ -1,5 +1,4 @@
 const mongoose = require("mongoose")
-const { Rating, Review } = require("./commonModels")
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -17,14 +16,6 @@ const userSchema = new mongoose.Schema({
     isAdmin: {
         type: Boolean,
         default: false
-    },
-    ratings: {
-        type: [Rating],
-        default: []
-    },
-    reviews: {
-        type: [Review],
-        default: []
     }
 })
 
