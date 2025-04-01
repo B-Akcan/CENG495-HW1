@@ -12,8 +12,7 @@ const ratingSchema = new mongoose.Schema({
         type: String,
         minLength: 3,
         maxLength: 50,
-        required: true,
-        unique: true
+        required: true
     },
     rating: {
         type: Number,

@@ -1,7 +1,6 @@
 const itemRouter = require("express").Router()
 const middleware = require("../utils/middleware")
 const Item = require("../models/item")
-const User = require("../models/user")
 const Rating = require("../models/rating")
 const Review = require("../models/review")
 
@@ -25,7 +24,7 @@ itemRouter.post("/", async (req, res) => {
         name: body.name,
         description: body.description,
         price: body.price,
-        seller: user.username,
+        seller: body.seller,
         image: body.image
     })
 
@@ -104,6 +103,45 @@ itemRouter.put("/:id/ratings", async (req, res) => {
     }
     
     return res.status(200).json({ info: `Item with id '${req.params.id}' was rated as '${req.body.rating}'.` })
+})
+
+itemRouter.put("/:id/reviews", async (req, res) => {
+    const token = middleware.extractToken(req)
+    let user
+    try {
+        user = await middleware.extractUser(token)
+    } catch (e) {
+        return res.status(401).json({ error: "You are not authorized to do this." })
+    }
+
+    if (!user) {
+        return res.status(401).json({ error: "You are not authorized to do this." })
+    }
+
+    const item = await Item.findById(req.params.id)
+    const review = await Review.find({ username: user.username, itemName: item.name })
+    if (review.length === 0) {
+        const newReview = new Review({
+            username: user.username,
+            itemName: item.name,
+            review: req.body.review
+        })
+
+        try {
+            await newReview.save()
+        } catch (e) {
+            return res.status(400).json({ error: "Review length must be between 3 and 500 characters." })
+        }
+        
+    } else {
+        try {
+            await Review.findOneAndUpdate({ username: user.username, itemName: item.name }, { review: req.body.review }, { runValidators: true })
+        } catch (e) {
+            return res.status(400).json({ error: "Review length must be between 3 and 500 characters." })
+        }
+    }
+    
+    return res.status(200).json({ info: `Item with id '${req.params.id}' was reviewed.` })
 })
 
 itemRouter.delete("/:id", async (req, res) => {

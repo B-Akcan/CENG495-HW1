@@ -34,10 +34,13 @@ userRouter.get("/:username", async (req, res) => {
 
     const username = user.username
     const ratings = await Rating.find({ username: username }, { itemName: 1, rating: 1 })
+    const len = ratings.length
+    const avgRating = ratings.map(rating => rating.rating).reduce((a, b) => a + b, 0) / len
     const reviews = await Review.find({ username: username }, { itemName: 1, review: 1 })
     const userToReturn = {
         username,
         ratings,
+        avgRating,
         reviews
     }
     return res.status(200).json(userToReturn)

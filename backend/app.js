@@ -11,11 +11,15 @@ const app = express()
 mongoose.set('strictQuery', false)
 mongoose.connect(config.MONGODB_URI)
   .then(() => {
-    console.log("connection successful")
+    console.log("Database connection successful")
   })
   .catch(() => {
-    console.log("connection failed")
+    console.log("Database connection failed")
   })
+
+const db = mongoose.connection
+db.collections.Rating.createIndex({ username: 1, itemName: 1 })
+db.collections.Review.createIndex({ username: 1, itemName: 1 })
 
 app.use(express.json())
 app.use("/login", loginRouter)

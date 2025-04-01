@@ -15,7 +15,7 @@ const itemSchema = new mongoose.Schema({
     description: {
         type: String,
         minLength: 3,
-        maxLength: 500,
+        maxLength: 1000,
         required: true
     },
     price: {
@@ -25,9 +25,9 @@ const itemSchema = new mongoose.Schema({
     seller: {
         type: String,
         required: true,
-        match: /^[_a-zA-Z][_a-zA-Z0-9]*$/,
+        match: /^[a-zA-Z][_'.,a-zA-Z0-9\s]*$/,
         minLength: 3,
-        maxLength: 20
+        maxLength: 50
     },
     image: {
         type: String,
