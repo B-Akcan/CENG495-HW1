@@ -1,5 +1,7 @@
 const express = require("express")
 const mongoose = require("mongoose")
+const cors = require('cors')
+
 const config = require("./utils/config")
 const middleware = require("./utils/middleware")
 const loginRouter = require("./controllers/login")
@@ -21,7 +23,9 @@ const db = mongoose.connection
 db.collections.Rating.createIndex({ username: 1, itemName: 1 })
 db.collections.Review.createIndex({ username: 1, itemName: 1 })
 
+app.use(cors())
 app.use(express.json())
+app.use(express.static("dist"))
 app.use("/login", loginRouter)
 app.use("/users", userRouter)
 app.use("/items", itemRouter)
