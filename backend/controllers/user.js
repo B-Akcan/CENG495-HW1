@@ -19,6 +19,23 @@ userRouter.post("/", async (req, res) => {
     return res.status(201).json({ info: `Successfully created user '${user.username}'.` })
 })
 
+userRouter.get("/", async (req, res) => {
+    const token = middleware.extractToken(req)
+    let user
+    try {
+        user = await middleware.extractUser(token)
+    } catch (e) {
+        return res.status(401).json({ error: "You are not authorized to do this." })
+    }
+
+    if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "You are not authorized to do this." })
+    }
+
+    const users = await User.find({}, { _id: 0, username: 1 })
+    return res.status(200).json(users)
+})
+
 userRouter.get("/:username", async (req, res) => {
     const token = middleware.extractToken(req)
     let user
@@ -41,9 +58,44 @@ userRouter.get("/:username", async (req, res) => {
         username,
         ratings,
         avgRating,
-        reviews
+        reviews,
+        isAdmin: user.isAdmin
     }
     return res.status(200).json(userToReturn)
+})
+
+userRouter.get("/:username/ratings", async (req, res) => {
+    const token = middleware.extractToken(req)
+    let user
+    try {
+        user = await middleware.extractUser(token)
+    } catch (e) {
+        return res.status(401).json({ error: "You are not authorized to do this." })
+    }
+
+    if (!user || (!user.isAdmin && user.username !== req.params.username)) {
+        return res.status(401).json({ error: "You are not authorized to do this." })
+    }
+
+    const ratings = await Rating.find({ username: req.params.username }, { _id: 0, itemName: 1, rating: 1 })
+    return res.status(200).json(ratings)
+})
+
+userRouter.get("/:username/reviews", async (req, res) => {
+    const token = middleware.extractToken(req)
+    let user
+    try {
+        user = await middleware.extractUser(token)
+    } catch (e) {
+        return res.status(401).json({ error: "You are not authorized to do this." })
+    }
+
+    if (!user || (!user.isAdmin && user.username !== req.params.username)) {
+        return res.status(401).json({ error: "You are not authorized to do this." })
+    }
+    
+    const reviews = await Review.find({ username: req.params.username }, { _id: 0, itemName: 1, review: 1, createdAt: 1 })
+    return res.status(200).json(reviews)
 })
 
 userRouter.delete("/:username", async (req, res) => {
@@ -59,11 +111,11 @@ userRouter.delete("/:username", async (req, res) => {
         return res.status(401).json({ error: "You are not authorized to do this." })
     }
 
-    await Rating.deleteMany({ username: user.username })
-    await Review.deleteMany({ username: user.username })
-    await User.findByIdAndDelete(user._id.toString())
+    await Rating.deleteMany({ username: req.params.username })
+    await Review.deleteMany({ username: req.params.username })
+    await User.deleteOne({ username: req.params.username })
     
-    return res.status(200).json({ info: `User '${user.username}' was deleted.` })
+    return res.status(200).json({ info: `User '${req.params.username}' was deleted.` })
 })
 
 module.exports = userRouter

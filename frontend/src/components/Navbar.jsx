@@ -16,9 +16,14 @@ const Navbar = ({ auth, handleLogout }) => {
           </Button>
           {auth.user ? (
             <>
-              <Button color="inherit" component={Link} to="/admin">
-                Admin
+              <Button color="inherit" component={Link} to="/user">
+                Profile
               </Button>
+              {auth.isAdmin ? (
+                <Button color="inherit" component={Link} to="/admin">
+                Admin
+                </Button>
+              ) : (<></>)}
               <Button color="inherit" onClick={handleLogout}>
                 Logout
               </Button>

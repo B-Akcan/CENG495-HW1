@@ -1,22 +1,28 @@
 import React, { useState } from "react";
-import { TextField, Button, Container, Typography, Box, Alert, Paper } from "@mui/material";
-import { Link } from "react-router-dom";
+import {Button,TextField,Typography,Box,Paper,Alert} from "@mui/material";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-function LoginPage({ handleLogin }) {
+const RegisterPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
+
     try {
-      await handleLogin(username, password);
-      navigate("/");
-    } catch {
-      setError("Invalid username or password.");
+      await axios.post("/users", { username, password });
+      setSuccess("Registration successful! Redirecting to login...");
+      setTimeout(() => navigate("/login"), 1500);
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Registration failed. Try another username."
+      );
     }
   };
 
@@ -24,39 +30,40 @@ function LoginPage({ handleLogin }) {
     <Box display="flex" justifyContent="center" mt={6}>
       <Paper elevation={3} sx={{ padding: 4, width: 400 }}>
         <Typography variant="h5" gutterBottom>
-          Login
+          Register
         </Typography>
         {error && <Alert severity="error">{error}</Alert>}
-        <form onSubmit={handleSubmit}>
+        {success && <Alert severity="success">{success}</Alert>}
+        <form onSubmit={handleRegister}>
           <TextField
-            label="Username"
             fullWidth
+            label="Username"
             margin="normal"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
           />
           <TextField
-            label="Password"
-            type="password"
             fullWidth
+            type="password"
+            label="Password"
             margin="normal"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <Button type="submit" variant="contained" color="primary" fullWidth>
-            Log In
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 2 }}
+          >
+            Register
           </Button>
         </form>
-        <Box mt={2} textAlign="center">
-          <Link to={"/register"} underline="hover">
-            Don't have an account? Register here
-          </Link>
-        </Box>
       </Paper>
     </Box>
   );
-}
+};
 
-export default LoginPage;
+export default RegisterPage;

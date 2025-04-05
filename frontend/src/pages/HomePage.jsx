@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Card, CardMedia, CardContent, Typography } from "@mui/material";
+import { Grid, Card, CardMedia, CardContent, Typography, Box, FormControl, Select, MenuItem, InputLabel } from "@mui/material";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
 function HomePage() {
+  const categories = [
+    "Vinyls",
+    "Antique Furniture",
+    "GPS Sport Watches",
+    "Running Shoes",
+  ];
+
   const [items, setItems] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
     axios.get("/items").then((response) => {
@@ -12,34 +20,60 @@ function HomePage() {
     });
   }, []);
 
+  const filteredItems = selectedCategory
+    ? items.filter((item) => item.category === selectedCategory)
+    : items;
+
   if (!Array.isArray(items)) {
     return <div>Loading...</div>;
   }
 
   return (
-    <Grid container spacing={3} sx={{ mt: 3 }}>
-      {items.map((item) => (
-        <Grid item key={item._id} xs={12} sm={6} md={4} lg={3}>
-          <Card>
-            <Link to={`/items/${item._id}`} style={{ textDecoration: "none", color: "inherit" }}>
-              <CardMedia
-                component="img"
-                height="200"
-                image={item.image}
-                alt={item.name}
-              />
-              <CardContent>
-                <Typography variant="h6">{item.name}</Typography>
-                <Typography variant="body1">${item.price}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Sold by: {item.seller}
-                </Typography>
-              </CardContent>
-            </Link>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
+    <Box mt={4}>
+      <FormControl fullWidth sx={{ mb: 4 }}>
+        <InputLabel>Filter by Category</InputLabel>
+        <Select
+          value={selectedCategory}
+          label="Filter by Category"
+          onChange={(event) => setSelectedCategory(event.target.value)}
+        >
+          <MenuItem value="">All Categories</MenuItem>
+          {categories.map((cat) => (
+            <MenuItem key={cat} value={cat}>
+              {cat}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <Grid container spacing={2}>
+        {filteredItems.map((item) => (
+          <Grid item xs={12} sm={6} md={4} key={item._id}>
+            <Card>
+              <Link to={`/items/${item._id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                {item.image && (
+                  <CardMedia
+                    component="img"
+                    height="140"
+                    image={item.image}
+                    alt={item.name}
+                  />
+                )}
+                <CardContent>
+                  <Typography variant="h6">{item.name}</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    ${item.price}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Category: {item.category}
+                  </Typography>
+                </CardContent>
+              </Link>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
   );
 }
 

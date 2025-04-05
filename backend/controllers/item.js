@@ -47,7 +47,7 @@ itemRouter.post("/", async (req, res) => {
 })
 
 itemRouter.get("/", async (req, res) => {
-    const items = await Item.find({}, {name: 1, price: 1, seller: 1, image: 1 })
+    const items = await Item.find({}, {name: 1, price: 1, seller: 1, image: 1, category: 1 })
     items.forEach(async (elem, idx) => {
         const ratings = await Rating.find({ itemName: elem.name }, { rating: 1 })
         const len = ratings.length
@@ -59,11 +59,19 @@ itemRouter.get("/", async (req, res) => {
 
 itemRouter.get("/:id", async (req, res) => {
     const item = await Item.findById(req.params.id, {_id: 0, __v: 0})
-    const ratings = await Rating.find({ itemName: item.name }, { rating: 1 })
-    const len = ratings.length
-    const avgRating = ratings.reduce((a, b) => a + b, 0) / len
-    item.averageRating = avgRating
     return res.status(200).json(item)
+})
+
+itemRouter.get("/:id/ratings", async (req, res) => {
+    const item = await Item.findById(req.params.id)
+    const ratings = await Rating.find({ itemName: item.name }, { _id: 0, username: 1, rating: 1 })
+    return res.status(200).json(ratings)
+})
+
+itemRouter.get("/:id/reviews", async (req, res) => {
+    const item = await Item.findById(req.params.id)
+    const reviews = await Review.find({ itemName: item.name }, { _id: 0, username: 1, review: 1, createdAt: 1 })
+    return res.status(200).json(reviews)
 })
 
 itemRouter.put("/:id/ratings", async (req, res) => {
@@ -80,8 +88,8 @@ itemRouter.put("/:id/ratings", async (req, res) => {
     }
 
     const item = await Item.findById(req.params.id)
-    const rating = await Rating.find({ username: user.username, itemName: item.name })
-    if (rating.length === 0) {
+    const rating = await Rating.findOne({ username: user.username, itemName: item.name })
+    if (rating === null) {
         const newRating = new Rating({
             username: user.username,
             itemName: item.name,
@@ -90,19 +98,20 @@ itemRouter.put("/:id/ratings", async (req, res) => {
 
         try {
             await newRating.save()
+            return res.status(200).json(newRating)
         } catch (e) {
             return res.status(400).json({ error: "Rating must be between 1 and 10." })
         }
         
     } else {
         try {
-            await Rating.findOneAndUpdate({ username: user.username, itemName: item.name }, { rating: req.body.rating }, { runValidators: true })
+            rating.rating = req.body.rating
+            await rating.save()
+            return res.status(200).json(rating)
         } catch (e) {
             return res.status(400).json({ error: "Rating must be between 1 and 10." })
         }
     }
-    
-    return res.status(200).json({ info: `Item with id '${req.params.id}' was rated as '${req.body.rating}'.` })
 })
 
 itemRouter.put("/:id/reviews", async (req, res) => {
@@ -119,29 +128,32 @@ itemRouter.put("/:id/reviews", async (req, res) => {
     }
 
     const item = await Item.findById(req.params.id)
-    const review = await Review.find({ username: user.username, itemName: item.name })
-    if (review.length === 0) {
+    const review = await Review.findOne({ username: user.username, itemName: item.name })
+    if (review === null) {
         const newReview = new Review({
             username: user.username,
             itemName: item.name,
-            review: req.body.review
+            review: req.body.review,
+            createdAt: Date.now()
         })
 
         try {
             await newReview.save()
+            return res.status(200).json(newReview)
         } catch (e) {
-            return res.status(400).json({ error: "Review length must be between 3 and 500 characters." })
+            return res.status(400).json({ error: "Review length can be at most 500 characters." })
         }
         
     } else {
         try {
-            await Review.findOneAndUpdate({ username: user.username, itemName: item.name }, { review: req.body.review }, { runValidators: true })
+            review.review = req.body.review
+            review.createdAt = Date.now()
+            await review.save()
+            return res.status(200).json(review)
         } catch (e) {
-            return res.status(400).json({ error: "Review length must be between 3 and 500 characters." })
+            return res.status(400).json({ error: "Review length can be at most 500 characters." })
         }
     }
-    
-    return res.status(200).json({ info: `Item with id '${req.params.id}' was reviewed.` })
 })
 
 itemRouter.delete("/:id", async (req, res) => {

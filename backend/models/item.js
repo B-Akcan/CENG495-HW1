@@ -14,7 +14,6 @@ const itemSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        minLength: 3,
         maxLength: 1000,
         required: true
     },
@@ -51,7 +50,6 @@ const itemSchema = new mongoose.Schema({
     },
     material: {
         type: String,
-        minLength: 3,
         maxLength: 30,
         required: false
     }

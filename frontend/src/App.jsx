@@ -4,14 +4,20 @@ import { ThemeProvider, CssBaseline, Container } from "@mui/material";
 import axios from "axios";
 import theme from "./theme";
 import HomePage from "./pages/HomePage";
+import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
 import ItemPage from "./pages/ItemPage";
 import AdminPage from "./pages/AdminPage";
+import UserPage from "./pages/UserPage";
 import Navbar from "./components/Navbar";
 
 function App() {
 
-  const [auth, setAuth] = useState({ user: null, token: null });
+  const [auth, setAuth] = useState({ user: null, token: null, isAdmin: null });
+
+  useEffect(() => {
+    document.title = 'E-Commerce App';
+  }, []);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -19,11 +25,11 @@ function App() {
       axios
         .get(`/users/${auth.user}`, { headers: { Authorization: `Bearer ${storedToken}` } })
         .then((response) => {
-          setAuth({ user: response.data, token: storedToken });
+          setAuth({ user: response.data.username, token: storedToken, isAdmin: response.data.isAdmin });
         })
         .catch(() => {
           localStorage.removeItem("token");
-          setAuth({ user: null, token: null });
+          setAuth({ user: null, token: null, isAdmin: null });
         });
     }
   }, []);
@@ -32,15 +38,15 @@ function App() {
     try {
       const response = await axios.post("/login", { username, password });
       localStorage.setItem("token", response.data.token);
-      setAuth({ user: response.data.username, token: response.data.token });
-    } catch (error) {
-      console.error("Login failed", error);
+      setAuth({ user: response.data.username, token: response.data.token, isAdmin: response.data.isAdmin });
+    } catch {
+      throw new Error("Login failed");
     }
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    setAuth({ user: null, token: null });
+    setAuth({ user: null, token: null, isAdmin: null });
   };
 
   return (
@@ -51,9 +57,11 @@ function App() {
         <Container>
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={auth.user ? <Navigate to="/" /> : <LoginPage handleLogin={handleLogin} />} />
-            <Route path="/items/:id" element={<ItemPage />} />
-            <Route path="/admin" element={auth.user ? <AdminPage /> : <Navigate to="/login" />} />
+            <Route path="/items/:id" element={<ItemPage auth={auth} />} />
+            <Route path="/admin" element={auth.user ? <AdminPage auth={auth} /> : <Navigate to="/login" />} />
+            <Route path="/user" element={auth.user ? <UserPage auth={auth} /> : <Navigate to="/login" />} />
           </Routes>
         </Container>
       </Router>

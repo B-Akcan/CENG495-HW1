@@ -15,7 +15,7 @@ loginRouter.post("/", async (req, res) => {
         data: { username: user.username, id: user._id }
     }, "secret", { expiresIn: "1h" })
 
-    return res.status(200).json({ username, token })
+    return res.status(200).json({ username, token, isAdmin: user.isAdmin })
 })
 
 module.exports = loginRouter
