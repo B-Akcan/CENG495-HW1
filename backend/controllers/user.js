@@ -7,16 +7,18 @@ const middleware = require("../utils/middleware")
 
 userRouter.post("/", async (req, res) => {
     const body = req.body
-
     const passwordHash = await argon2.hash(body.password)
 
-    const user = new User({
-        username: body.username,
-        passwordHash
-    })
-
-    await user.save()
-    return res.status(201).json({ info: `Successfully created user '${user.username}'.` })
+    try {
+        const user = new User({
+            username: body.username,
+            passwordHash
+        })
+        await user.save()
+        return res.status(201).json({ info: `Successfully created user '${user.username}'.` })
+    } catch {
+        return res.status(400).json({ error: "Credentials could not be validated." })
+    }
 })
 
 userRouter.get("/", async (req, res) => {

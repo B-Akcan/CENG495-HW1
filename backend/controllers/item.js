@@ -19,31 +19,30 @@ itemRouter.post("/", async (req, res) => {
 
     const body = req.body
 
-    const item = new Item({
-        category: body.category,
-        name: body.name,
-        description: body.description,
-        price: body.price,
-        seller: body.seller,
-        image: body.image
-    })
-
-    if ("batteryLife" in body)
-        item.batteryLife = body.batteryLife
-    if ("age" in body)
-        item.age = body.age
-    if ("size" in body)
-        item.size = body.size
-    if ("material" in body)
-        item.material = body.material
-
     try {
+        const item = new Item({
+            category: body.category,
+            name: body.name,
+            description: body.description,
+            price: body.price,
+            seller: body.seller,
+            image: body.image
+        })
+    
+        if ("batteryLife" in body)
+            item.batteryLife = body.batteryLife
+        if ("age" in body)
+            item.age = body.age
+        if ("size" in body)
+            item.size = body.size
+        if ("material" in body)
+            item.material = body.material
+
         await item.save()
-    } catch (e) {
+        return res.status(201).json({ info: `Successfully created item '${item.name}'.` })
+    } catch {
         return res.status(400).json({ error: "Item could not be validated." })
     }
-    
-    return res.status(201).json({ info: `Successfully created item '${item.name}'.` })
 })
 
 itemRouter.get("/", async (req, res) => {
