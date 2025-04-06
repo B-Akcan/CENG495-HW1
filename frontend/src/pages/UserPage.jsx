@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {Box,Typography,Card,CardContent,List,ListItem,ListItemText,Rating,Divider} from "@mui/material";
-import api from "../api";
+import axios from "axios";
 
 function UserPage({auth}) {
   const [userRatings, setUserRatings] = useState([]);
@@ -18,8 +18,8 @@ function UserPage({auth}) {
 
       try {
         const [ratingsRes, reviewsRes] = await Promise.all([
-          api.get(`/users/${auth.user}/ratings`, config),
-          api.get(`/users/${auth.user}/reviews`, config),
+          axios.get(`https://ceng-495-hw-1-steel.vercel.app/users/${auth.user}/ratings`, config),
+          axios.get(`https://ceng-495-hw-1-steel.vercel.app/users/${auth.user}/reviews`, config),
         ]);
         setUserRatings(ratingsRes.data);
         setUserReviews(reviewsRes.data);

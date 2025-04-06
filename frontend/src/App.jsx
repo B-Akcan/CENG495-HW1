@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider, CssBaseline, Container } from "@mui/material";
-import api from "./api";
+import axios from "axios";
 import theme from "./theme";
 import HomePage from "./pages/HomePage";
 import RegisterPage from "./pages/RegisterPage";
@@ -22,8 +22,8 @@ function App() {
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (storedToken) {
-      api
-        .get(`/users/${auth.user}`, { headers: { Authorization: `Bearer ${storedToken}` } })
+      axios
+        .get(`https://ceng-495-hw-1-steel.vercel.app/users/${auth.user}`, { headers: { Authorization: `Bearer ${storedToken}` } })
         .then((response) => {
           setAuth({ user: response.data.username, token: storedToken, isAdmin: response.data.isAdmin });
         })
@@ -36,7 +36,7 @@ function App() {
 
   const handleLogin = async (username, password) => {
     try {
-      const response = await api.post("/login", { username, password });
+      const response = await axios.post("https://ceng-495-hw-1-steel.vercel.app/login", { username, password });
       localStorage.setItem("token", response.data.token);
       setAuth({ user: response.data.username, token: response.data.token, isAdmin: response.data.isAdmin });
     } catch {

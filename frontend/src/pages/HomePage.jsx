@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Card, CardMedia, CardContent, Typography, Box, FormControl, Select, MenuItem, InputLabel } from "@mui/material";
 import { Link } from "react-router-dom";
-import api from "../api";
+import axios from "axios";
 
 function HomePage() {
   const categories = [
@@ -15,7 +15,7 @@ function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
-    api.get("/items").then((response) => {
+    axios.get("https://ceng-495-hw-1-steel.vercel.app/items").then((response) => {
       setItems(response.data);
     });
   }, []);

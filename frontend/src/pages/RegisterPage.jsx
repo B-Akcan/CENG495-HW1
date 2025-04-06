@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {Button,TextField,Typography,Box,Paper,Alert} from "@mui/material";
-import api from "../api";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
@@ -16,7 +16,7 @@ const RegisterPage = () => {
     setSuccess("");
 
     try {
-      await api.post("/users", { username, password });
+      await axios.post("https://ceng-495-hw-1-steel.vercel.app/users", { username, password });
       setSuccess("Registration successful! Redirecting to login...");
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {

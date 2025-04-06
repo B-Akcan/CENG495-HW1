@@ -4,7 +4,7 @@ import {
   Select, InputLabel, FormControl, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Snackbar, Alert
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import api from "../api";
+import axios from "axios";
 
 const AdminPage = ({ auth }) => {
   const [items, setItems] = useState([]);
@@ -23,13 +23,13 @@ const AdminPage = ({ auth }) => {
   };
 
   useEffect(() => {
-    api.get("/items", config).then(res => setItems(res.data));
-    api.get("/users", config).then(res => setUsers(res.data));
+    axios.get("https://ceng-495-hw-1-steel.vercel.app/items", config).then(res => setItems(res.data));
+    axios.get("https://ceng-495-hw-1-steel.vercel.app/users", config).then(res => setUsers(res.data));
   }, [newItem, newUser]);
 
   const handleAddItem = async () => {
     try {
-      await api.post("/items", newItem, config);
+      await axios.post("https://ceng-495-hw-1-steel.vercel.app/items", newItem, config);
       setNewItem({ name: "", price: 0, category: "", description: "", seller: "", image: "" });
       setSuccess("Item added successfully.");
     } catch (error) {
@@ -40,7 +40,7 @@ const AdminPage = ({ auth }) => {
 
   const handleDeleteItem = async () => {
     try {
-      await api.delete(`/items/${confirmDeleteItemId}`, config);
+      await axios.delete(`https://ceng-495-hw-1-steel.vercel.app/items/${confirmDeleteItemId}`, config);
       setItems(items.filter(item => item._id !== confirmDeleteItemId));
     } catch (error) {
       console.error("Error deleting item:", error);
@@ -51,7 +51,7 @@ const AdminPage = ({ auth }) => {
 
   const handleAddUser = async () => {
     try {
-      await api.post("/users", newUser);
+      await axios.post("https://ceng-495-hw-1-steel.vercel.app/users", newUser);
       setUsers([...users, newUser]);
       setNewUser({ username: "", password: "" });
       setSuccess("User added successfully.");
@@ -63,7 +63,7 @@ const AdminPage = ({ auth }) => {
 
   const handleDeleteUser = async () => {
     try {
-      await api.delete(`/users/${confirmDeleteUsername}`, config);
+      await axios.delete(`https://ceng-495-hw-1-steel.vercel.app/users/${confirmDeleteUsername}`, config);
       setUsers(users.filter(user => user.username !== confirmDeleteUsername));
     } catch (error) {
       console.error("Error deleting user:", error);
