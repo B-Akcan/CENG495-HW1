@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Card, CardMedia, CardContent, Typography, Box, FormControl, Select, MenuItem, InputLabel } from "@mui/material";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api";
 
 function HomePage() {
   const categories = [
@@ -15,7 +15,7 @@ function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
-    axios.get("/items").then((response) => {
+    api.get("/items").then((response) => {
       setItems(response.data);
     });
   }, []);

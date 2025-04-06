@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {Button,TextField,Typography,Box,Paper,Alert} from "@mui/material";
-import axios from "axios";
+import api from "../api";
 import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
@@ -16,7 +16,7 @@ const RegisterPage = () => {
     setSuccess("");
 
     try {
-      await axios.post("/users", { username, password });
+      await api.post("/users", { username, password });
       setSuccess("Registration successful! Redirecting to login...");
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {

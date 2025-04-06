@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {Box,Typography,Card,CardContent,List,ListItem,ListItemText,Rating,Divider} from "@mui/material";
-import axios from "axios";
+import api from "../api";
 
 function UserPage({auth}) {
   const [userRatings, setUserRatings] = useState([]);
@@ -18,8 +18,8 @@ function UserPage({auth}) {
 
       try {
         const [ratingsRes, reviewsRes] = await Promise.all([
-          axios.get(`/users/${auth.user}/ratings`, config),
-          axios.get(`/users/${auth.user}/reviews`, config),
+          api.get(`/users/${auth.user}/ratings`, config),
+          api.get(`/users/${auth.user}/reviews`, config),
         ]);
         setUserRatings(ratingsRes.data);
         setUserReviews(reviewsRes.data);

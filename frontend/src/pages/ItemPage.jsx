@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import api from "../api";
 import {Typography,Box,Card,CardContent,TextField,Button,Rating,Divider,Alert} from "@mui/material";
 
 const ItemPage = ({auth}) => {
@@ -18,9 +18,9 @@ const ItemPage = ({auth}) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get(`/items/${id}`).then((res) => setItem(res.data));
-    axios.get(`/items/${id}/ratings`).then((res) => setRatings(res.data));
-    axios.get(`/items/${id}/reviews`).then((res) => setReviews(res.data));
+    api.get(`/items/${id}`).then((res) => setItem(res.data));
+    api.get(`/items/${id}/ratings`).then((res) => setRatings(res.data));
+    api.get(`/items/${id}/reviews`).then((res) => setReviews(res.data));
   }, [id]);
 
   const setRatingsHelper = (data) => {
@@ -43,7 +43,7 @@ const ItemPage = ({auth}) => {
   const handleSubmitRating = async () => {
     if (!auth.user) return setError("You must be logged in to rate.");
     try {
-      const res = await axios.put(
+      const res = await api.put(
         `/items/${id}/ratings`,
         { rating: newRating },
         { headers: { Authorization: `Bearer ${auth.token}` } }
@@ -77,7 +77,7 @@ const ItemPage = ({auth}) => {
   const handleSubmitReview = async () => {
     if (!auth.user) return setError("You must be logged in to review.");
     try {
-      const res = await axios.put(
+      const res = await api.put(
         `/items/${id}/reviews`,
         { review: newReview },
         { headers: { Authorization: `Bearer ${auth.token}` } }
