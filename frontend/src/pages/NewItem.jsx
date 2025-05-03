@@ -12,8 +12,18 @@ const NewItem = ({ auth }) => {
     image: "",
   });
 
+  const [batteryLife, setBatteryLife] = useState("");
+  const [age, setAge] = useState("");
+  const [size, setSize] = useState("");
+  const [material, setMaterial] = useState("");
+
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+
+  const showBatteryLife = newItem.category === "GPS Sport Watches";
+  const showAge = newItem.category === "Antique Furniture" || newItem.category === "Vinyls";
+  const showSize = newItem.category === "Running Shoes";
+  const showMaterial = newItem.category === "Antique Furniture" || newItem.category === "Running Shoes";
 
   const config = {
     headers: {
@@ -23,7 +33,14 @@ const NewItem = ({ auth }) => {
 
   const handleAddItem = async () => {
     try {
-      await axios.post("https://ceng-495-hw-1-steel.vercel.app/items", newItem, config);
+      const requestBody = newItem
+
+      if (showBatteryLife && batteryLife) requestBody.batteryLife = parseInt(batteryLife);
+      if (showAge && age) requestBody.age = parseInt(age);
+      if (showSize && size) requestBody.size = parseInt(size);
+      if (showMaterial && material.trim()) requestBody.material = material.trim();
+
+      await axios.post("https://ceng-495-hw-1-steel.vercel.app/items", requestBody, config);
       setNewItem({ name: "", price: 0, category: "", description: "", seller: "", image: "" });
       setSuccess("Item added successfully.");
     } catch (error) {
@@ -40,6 +57,7 @@ const NewItem = ({ auth }) => {
         <Grid item xs={12} md={6}>
           <TextField
             label="Name"
+            required
             fullWidth
             margin="normal"
             value={newItem.name}
@@ -47,6 +65,7 @@ const NewItem = ({ auth }) => {
           />
           <TextField
             label="Price"
+            required
             fullWidth
             margin="normal"
             type="number"
@@ -66,8 +85,57 @@ const NewItem = ({ auth }) => {
               <MenuItem value="Running Shoes">Running Shoes</MenuItem>
             </Select>
           </FormControl>
+
+          {showBatteryLife && (
+            <TextField
+              label="Battery Life (hours, minimum 1)"
+              type="number"
+              inputProps={{ min: 1 }}
+              value={batteryLife}
+              onChange={(e) => setBatteryLife(e.target.value)}
+              fullWidth
+              sx={{ mt: 2 }}
+            />
+          )}
+
+          {showAge && (
+            <TextField
+              label="Age (years, minimum 0)"
+              type="number"
+              inputProps={{ min: 0 }}
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+              fullWidth
+              sx={{ mt: 2 }}
+            />
+          )}
+
+          {showSize && (
+            <TextField
+              label="Size (minimum 30, maximum 50)"
+              type="number"
+              inputProps={{ min: 30, max: 50 }}
+              value={size}
+              onChange={(e) => setSize(e.target.value)}
+              fullWidth
+              sx={{ mt: 2 }}
+            />
+          )}
+
+          {showMaterial && (
+            <TextField
+              label="Material"
+              inputProps={{ maxLength: 30 }}
+              value={material}
+              onChange={(e) => setMaterial(e.target.value)}
+              fullWidth
+              sx={{ mt: 2 }}
+            />
+          )}
+
           <TextField
             label="Description"
+            required
             fullWidth
             margin="normal"
             multiline
@@ -77,6 +145,7 @@ const NewItem = ({ auth }) => {
           />
           <TextField
             label="Seller"
+            required
             fullWidth
             margin="normal"
             value={newItem.seller}
@@ -84,6 +153,7 @@ const NewItem = ({ auth }) => {
           />
           <TextField
             label="Image URL"
+            required
             fullWidth
             margin="normal"
             value={newItem.image}
