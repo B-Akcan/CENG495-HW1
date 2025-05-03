@@ -110,8 +110,6 @@ const ItemPage = ({auth}) => {
       ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length
       : 0;
 
-  if (!item) return <Typography>Loading...</Typography>;
-
   return (
     <Box mt={4}>
       {item && (

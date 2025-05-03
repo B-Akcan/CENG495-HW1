@@ -1,6 +1,7 @@
 const itemRouter = require("express").Router()
 const middleware = require("../utils/middleware")
 const Item = require("../models/item")
+const User = require("../models/user")
 const Rating = require("../models/rating")
 const Review = require("../models/review")
 
@@ -58,8 +59,11 @@ itemRouter.get("/", async (req, res) => {
 
 itemRouter.get("/:id", async (req, res) => {
     const item = await Item.findById(req.params.id, {_id: 0, __v: 0})
-    const phoneNumber = await User.findOne({ username: item.username }, { _id: 0, __v: 0, phoneNumber: 1 })
-    const result = Object.assign({}, item, phoneNumber)
+    const phoneNumber = await User.findOne({ username: item.username }, { _id: 0, phoneNumber: 1 })
+    const result = {
+        ...item._doc,
+        phoneNumber: phoneNumber.phoneNumber
+    }
     return res.status(200).json(result)
 })
 
