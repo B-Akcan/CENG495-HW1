@@ -23,7 +23,9 @@ const db = mongoose.connection
 db.collections.Rating.createIndex({ username: 1, itemName: 1 })
 db.collections.Review.createIndex({ username: 1, itemName: 1 })
 
-app.use(cors())
+app.use(cors({
+  origin: true
+}))
 app.use(express.json())
 app.use(express.static("dist"))
 app.use("/login", loginRouter)
