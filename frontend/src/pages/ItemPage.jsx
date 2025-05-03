@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import {Typography,Box,Card,CardContent,TextField,Button,Rating,Divider,Alert,Stack,CircularProgress} from "@mui/material";
+import {Typography,Box,Card,CardContent,TextField,Button,Rating,Divider,Alert,Stack,CircularProgress,Dialog,DialogTitle,DialogContent,DialogActions} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const ItemPage = ({auth}) => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [item, setItem] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -17,6 +19,7 @@ const ItemPage = ({auth}) => {
   const [reviewSuccess, setReviewSuccess] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     axios.get(`https://ceng-495-hw-1-steel.vercel.app/items/${id}`)
@@ -105,6 +108,19 @@ const ItemPage = ({auth}) => {
     }
   };
 
+  const handleDeleteItem = async () => {
+    if (!auth.user) return setError("You must be logged in to delete the item.");
+    try {
+      await axios.delete(
+        `https://ceng-495-hw-1-steel.vercel.app/items/${id}`,
+        { headers: { Authorization: `Bearer ${auth.token}` } }
+      );
+      navigate("/");
+    } catch {
+      setError("Failed to delete the item.");
+    }
+  };
+
   const averageRating =
     ratings.length > 0
       ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length
@@ -118,6 +134,7 @@ const ItemPage = ({auth}) => {
             <Typography variant="h4">{item.name}</Typography>
             <Typography variant="h5">Sold by: {item.seller}</Typography>
             <Typography variant="h5">Seller phone number: {item.phoneNumber}</Typography>
+
             {item.image && (
               <Box
                 component="img"
@@ -133,6 +150,7 @@ const ItemPage = ({auth}) => {
                 }}
               />
             )}
+
             <Typography variant="body1" color="textSecondary" mb={1}>
               {item.description}
             </Typography>
@@ -163,6 +181,41 @@ const ItemPage = ({auth}) => {
                 ({ratings.length} ratings)
               </Typography>
             </Box>
+
+            {auth.user && auth.user === item.username && (
+              <>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  sx={{ mt: 2 }}
+                  onClick={() => setOpenDialog(true)}
+                >
+                  Delete Item
+                </Button>
+                
+                <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+                  <DialogTitle>Confirm Deletion</DialogTitle>
+                  <DialogContent>
+                    <Typography>
+                      Are you sure you want to delete this item? This action cannot be undone.
+                    </Typography>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+                    <Button
+                      onClick={async () => {
+                        setOpenDialog(false);
+                        await handleDeleteItem();
+                      }}
+                      color="error"
+                      variant="contained"
+                    >
+                      Delete
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+              </>
+            )}
           </CardContent>
         </Card>
       )}

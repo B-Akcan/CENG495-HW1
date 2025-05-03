@@ -14,7 +14,7 @@ import Navbar from "./components/Navbar";
 
 function App() {
 
-  const [auth, setAuth] = useState({ user: null, token: null, isAdmin: null });
+  const [auth, setAuth] = useState({ user: null, token: null, isAdmin: null, phoneNumber: null });
 
   useEffect(() => {
     document.title = 'E-Commerce App';
@@ -26,11 +26,11 @@ function App() {
       axios
         .get(`https://ceng-495-hw-1-steel.vercel.app/users/${auth.user}`, { headers: { Authorization: `Bearer ${storedToken}` } })
         .then((response) => {
-          setAuth({ user: response.data.username, token: storedToken, isAdmin: response.data.isAdmin });
+          setAuth({ user: response.data.username, token: storedToken, isAdmin: response.data.isAdmin, phoneNumber: response.data.phoneNumber });
         })
         .catch(() => {
           localStorage.removeItem("token");
-          setAuth({ user: null, token: null, isAdmin: null });
+          setAuth({ user: null, token: null, isAdmin: null, phoneNumber: null });
         });
     }
   }, []);
@@ -50,7 +50,7 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    setAuth({ user: null, token: null, isAdmin: null });
+    setAuth({ user: null, token: null, isAdmin: null, phoneNumber: null });
   };
 
   return (
