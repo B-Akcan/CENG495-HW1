@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {Box,Typography,Card,CardContent,List,ListItem,ListItemText,Rating,Divider} from "@mui/material";
+import {Box,Typography,Card,CardContent,List,ListItem,ListItemText,Rating,Divider,Stack,CircularProgress} from "@mui/material";
 import axios from "axios";
 
 function UserPage({auth}) {
   const [userRatings, setUserRatings] = useState([]);
   const [userReviews, setUserReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -20,7 +21,9 @@ function UserPage({auth}) {
         const [ratingsRes, reviewsRes] = await Promise.all([
           axios.get(`https://ceng-495-hw-1-steel.vercel.app/users/${auth.user}/ratings`, config),
           axios.get(`https://ceng-495-hw-1-steel.vercel.app/users/${auth.user}/reviews`, config),
-        ]);
+        ]).finally(() => {
+          setLoading(false);
+        })
         setUserRatings(ratingsRes.data);
         setUserReviews(reviewsRes.data);
       } catch (error) {
@@ -30,6 +33,15 @@ function UserPage({auth}) {
 
     fetchUserData();
   }, [auth.token]);
+
+  if (loading) {
+      return (
+        <Stack alignItems="center" justifyContent="center" sx={{ minHeight: "70vh" }}>
+          <CircularProgress size={60} />
+          <Typography variant="h6" mt={2}>Loading profile...</Typography>
+        </Stack>
+      );
+    }
 
   const averageRating =
     userRatings.length > 0

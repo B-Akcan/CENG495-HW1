@@ -9,6 +9,7 @@ import LoginPage from "./pages/LoginPage";
 import ItemPage from "./pages/ItemPage";
 import AdminPage from "./pages/AdminPage";
 import UserPage from "./pages/UserPage";
+import NewItem from "./pages/NewItem";
 import Navbar from "./components/Navbar";
 
 function App() {
@@ -65,6 +66,7 @@ function App() {
             <Route path="/items/:id" element={<ItemPage auth={auth} />} />
             <Route path="/admin" element={auth.user ? <AdminPage auth={auth} /> : <Navigate to="/login" />} />
             <Route path="/user" element={auth.user ? <UserPage auth={auth} /> : <Navigate to="/login" />} />
+            <Route path="/new-item" element={auth.user ? <NewItem auth={auth} /> : <Navigate to="/login" />} />
           </Routes>
         </Container>
       </Router>

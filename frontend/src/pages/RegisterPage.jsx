@@ -22,7 +22,7 @@ const RegisterPage = () => {
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
       setError(
-        err.response?.data?.message || "Registration failed. Try another username."
+        err.response?.data?.message || "Registration failed. Fields may not be valid."
       );
     }
   };

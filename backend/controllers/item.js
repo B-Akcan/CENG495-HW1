@@ -27,7 +27,8 @@ itemRouter.post("/", async (req, res) => {
             description: body.description,
             price: body.price,
             seller: body.seller,
-            image: body.image
+            image: body.image,
+            username: user.username
         })
     
         if ("batteryLife" in body)
