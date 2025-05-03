@@ -45,6 +45,7 @@ function UserPage({auth}) {
       <Card sx={{ mb: 4 }}>
         <CardContent>
           <Typography variant="h6">Username: {auth.user}</Typography>
+          <Typography variant="h6">Phone Number: {auth.phoneNumber}</Typography>
           <Typography variant="body1" mt={2}>
             Average Rating Given:
           </Typography>

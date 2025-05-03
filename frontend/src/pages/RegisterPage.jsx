@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 const RegisterPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ const RegisterPage = () => {
     setSuccess("");
 
     try {
-      await axios.post("https://ceng-495-hw-1-steel.vercel.app/users", { username, password });
+      await axios.post("https://ceng-495-hw-1-steel.vercel.app/users", { username, password, phoneNumber });
       setSuccess("Registration successful! Redirecting to login...");
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
@@ -50,6 +51,14 @@ const RegisterPage = () => {
             margin="normal"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <TextField
+            fullWidth
+            label="Phone Number"
+            margin="normal"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
             required
           />
           <Button

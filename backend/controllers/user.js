@@ -12,7 +12,8 @@ userRouter.post("/", async (req, res) => {
     try {
         const user = new User({
             username: body.username,
-            passwordHash
+            passwordHash,
+            phoneNumber: body.phoneNumber
         })
         await user.save()
         return res.status(201).json({ info: `Successfully created user '${user.username}'.` })
@@ -58,6 +59,7 @@ userRouter.get("/:username", async (req, res) => {
     const reviews = await Review.find({ username: username }, { itemName: 1, review: 1 })
     const userToReturn = {
         username,
+        phoneNumber: user.phoneNumber,
         ratings,
         avgRating,
         reviews,
@@ -113,11 +115,13 @@ userRouter.delete("/:username", async (req, res) => {
         return res.status(401).json({ error: "You are not authorized to do this." })
     }
 
-    await Rating.deleteMany({ username: req.params.username })
-    await Review.deleteMany({ username: req.params.username })
-    await User.deleteOne({ username: req.params.username })
+    const username = req.params.username
+    await Rating.deleteMany({ username: username })
+    await Review.deleteMany({ username: username })
+    await Item.deleteMany({ username: username })
+    await User.deleteOne({ username: username })
     
-    return res.status(200).json({ info: `User '${req.params.username}' was deleted.` })
+    return res.status(200).json({ info: `User '${username}' was deleted.` })
 })
 
 module.exports = userRouter

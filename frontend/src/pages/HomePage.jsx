@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Card, CardMedia, CardContent, Typography, Box, FormControl, Select, MenuItem, InputLabel } from "@mui/material";
+import { Grid, Card, CardMedia, CardContent, Typography, Box, FormControl, Select, MenuItem, InputLabel, CircularProgress, Stack } from "@mui/material";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
@@ -13,19 +13,33 @@ function HomePage() {
 
   const [items, setItems] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get("https://ceng-495-hw-1-steel.vercel.app/items").then((response) => {
-      setItems(response.data);
-    });
+    axios
+      .get("https://ceng-495-hw-1-steel.vercel.app/items")
+      .then((response) => {
+        setItems(response.data);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch items:", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   const filteredItems = selectedCategory
     ? items.filter((item) => item.category === selectedCategory)
     : items;
 
-  if (!Array.isArray(items)) {
-    return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <Stack alignItems="center" justifyContent="center" sx={{ minHeight: "70vh" }}>
+        <CircularProgress size={60} />
+        <Typography variant="h6" mt={2}>Loading items...</Typography>
+      </Stack>
+    );
   }
 
   return (

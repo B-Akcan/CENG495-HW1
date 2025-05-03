@@ -52,6 +52,13 @@ const itemSchema = new mongoose.Schema({
         type: String,
         maxLength: 30,
         required: false
+    },
+    username: {
+        type: String,
+        required: true,
+        match: /^[_a-zA-Z][_a-zA-Z0-9]*$/,
+        minLength: 3,
+        maxLength: 20
     }
 })
 

@@ -13,6 +13,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    phoneNumber: {
+        type: String,
+        required: true,
+        unique: true,
+        match: /^[0-9]{10,10}$/,
+        minLength: 10,
+        maxLength: 10
+    },
     isAdmin: {
         type: Boolean,
         default: false

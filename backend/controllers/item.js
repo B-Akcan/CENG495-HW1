@@ -13,7 +13,7 @@ itemRouter.post("/", async (req, res) => {
         return res.status(401).json({ error: "You are not authorized to do this." })
     }
 
-    if (!user || !user.isAdmin) {
+    if (!user) {
         return res.status(401).json({ error: "You are not authorized to do this." })
     }
 
@@ -58,7 +58,9 @@ itemRouter.get("/", async (req, res) => {
 
 itemRouter.get("/:id", async (req, res) => {
     const item = await Item.findById(req.params.id, {_id: 0, __v: 0})
-    return res.status(200).json(item)
+    const phoneNumber = await User.findOne({ username: item.username }, { _id: 0, __v: 0, phoneNumber: 1 })
+    const result = Object.assign({}, item, phoneNumber)
+    return res.status(200).json(result)
 })
 
 itemRouter.get("/:id/ratings", async (req, res) => {
@@ -164,12 +166,17 @@ itemRouter.delete("/:id", async (req, res) => {
         return res.status(401).json({ error: "You are not authorized to do this." })
     }
 
-    if (!user || !user.isAdmin) {
+    if (!user) {
         return res.status(401).json({ error: "You are not authorized to do this." })
     }
 
     const itemId = req.params.id
     const item = await Item.findById(itemId)
+
+    if (!user.isAdmin && item.username != user.username) {
+        return res.status(401).json({ error: "You are not authorized to do this." })
+    }
+
     await Rating.deleteMany({ itemName: item.name })
     await Review.deleteMany({ itemName: item.name })
     await Item.findByIdAndDelete(itemId)

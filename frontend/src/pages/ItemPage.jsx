@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import {Typography,Box,Card,CardContent,TextField,Button,Rating,Divider,Alert} from "@mui/material";
+import {Typography,Box,Card,CardContent,TextField,Button,Rating,Divider,Alert,Stack,CircularProgress} from "@mui/material";
 
 const ItemPage = ({auth}) => {
   const { id } = useParams();
@@ -16,12 +16,26 @@ const ItemPage = ({auth}) => {
   const [ratingSuccess, setRatingSuccess] = useState(null);
   const [reviewSuccess, setReviewSuccess] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(`https://ceng-495-hw-1-steel.vercel.app/items/${id}`).then((res) => setItem(res.data));
-    axios.get(`https://ceng-495-hw-1-steel.vercel.app/items/${id}/ratings`).then((res) => setRatings(res.data));
-    axios.get(`https://ceng-495-hw-1-steel.vercel.app/items/${id}/reviews`).then((res) => setReviews(res.data));
+    axios.get(`https://ceng-495-hw-1-steel.vercel.app/items/${id}`)
+      .then((res) => setItem(res.data))
+      .finally(() => setLoading(false));
+    axios.get(`https://ceng-495-hw-1-steel.vercel.app/items/${id}/ratings`)
+      .then((res) => setRatings(res.data));
+    axios.get(`https://ceng-495-hw-1-steel.vercel.app/items/${id}/reviews`)
+      .then((res) => setReviews(res.data));
   }, [id]);
+
+  if (loading) {
+      return (
+        <Stack alignItems="center" justifyContent="center" sx={{ minHeight: "70vh" }}>
+          <CircularProgress size={60} />
+          <Typography variant="h6" mt={2}>Loading item...</Typography>
+        </Stack>
+      );
+    }
 
   const setRatingsHelper = (data) => {
     const newRatings = ratings
@@ -105,6 +119,7 @@ const ItemPage = ({auth}) => {
           <CardContent>
             <Typography variant="h4">{item.name}</Typography>
             <Typography variant="h5">Sold by: {item.seller}</Typography>
+            <Typography variant="h5">Seller phone number: {item.phoneNumber}</Typography>
             {item.image && (
               <Box
                 component="img"

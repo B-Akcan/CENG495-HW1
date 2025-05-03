@@ -38,7 +38,10 @@ function App() {
     try {
       const response = await axios.post("https://ceng-495-hw-1-steel.vercel.app/login", { username, password });
       localStorage.setItem("token", response.data.token);
-      setAuth({ user: response.data.username, token: response.data.token, isAdmin: response.data.isAdmin });
+      setAuth({ user: response.data.username,
+                token: response.data.token,
+                isAdmin: response.data.isAdmin,
+                phoneNumber: response.data.phoneNumber });
     } catch {
       throw new Error("Login failed");
     }
