@@ -20,6 +20,7 @@ function App() {
       localStorage.setItem("user", response.data.username);
       localStorage.setItem("isAdmin", response.data.isAdmin);
       localStorage.setItem("phoneNumber", response.data.phoneNumber);
+      window.location.reload();
     } catch {
       throw new Error("Login failed");
     }
@@ -30,6 +31,7 @@ function App() {
     localStorage.removeItem("user");
     localStorage.removeItem("isAdmin");
     localStorage.removeItem("phoneNumber");
+    window.location.reload();
   };
 
   const user = localStorage.getItem("user");

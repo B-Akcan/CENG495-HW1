@@ -23,7 +23,7 @@ const Navbar = ({ handleLogout }) => {
               <Button color="inherit" component={Link} to="/new-item">
                 New Item
               </Button>
-              {isAdmin ? (
+              {isAdmin == "true" ? (
                 <Button color="inherit" component={Link} to="/admin">
                 Admin
                 </Button>
