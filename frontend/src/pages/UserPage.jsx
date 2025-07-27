@@ -2,25 +2,29 @@ import React, { useEffect, useState } from "react";
 import {Box,Typography,Card,CardContent,List,ListItem,ListItemText,Rating,Divider,Stack,CircularProgress} from "@mui/material";
 import axios from "axios";
 
-function UserPage({auth}) {
+function UserPage() {
   const [userRatings, setUserRatings] = useState([]);
   const [userReviews, setUserReviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const token = localStorage.getItem("token");
+  const user = localStorage.getItem("user");
+  const phoneNumber = localStorage.getItem("phoneNumber");
+
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!auth.token) return;
+      if (!token) return;
 
       const config = {
         headers: {
-          Authorization: `Bearer ${auth.token}`,
+          Authorization: `Bearer ${token}`,
         },
       };
 
       try {
         const [ratingsRes, reviewsRes] = await Promise.all([
-          axios.get(`https://ceng-495-hw-1-steel.vercel.app/users/${auth.user}/ratings`, config),
-          axios.get(`https://ceng-495-hw-1-steel.vercel.app/users/${auth.user}/reviews`, config),
+          axios.get(`https://ceng-495-hw-1-steel.vercel.app/users/${user}/ratings`, config),
+          axios.get(`https://ceng-495-hw-1-steel.vercel.app/users/${user}/reviews`, config),
         ]).finally(() => {
           setLoading(false);
         })
@@ -32,7 +36,7 @@ function UserPage({auth}) {
     };
 
     fetchUserData();
-  }, [auth.token]);
+  }, [token]);
 
   if (loading) {
       return (
@@ -56,8 +60,8 @@ function UserPage({auth}) {
 
       <Card sx={{ mb: 4 }}>
         <CardContent>
-          <Typography variant="h6">Username: {auth.user}</Typography>
-          <Typography variant="h6">Phone Number: {auth.phoneNumber}</Typography>
+          <Typography variant="h6">Username: {user}</Typography>
+          <Typography variant="h6">Phone Number: {phoneNumber}</Typography>
           <Typography variant="body1" mt={2}>
             Average Rating Given:
           </Typography>

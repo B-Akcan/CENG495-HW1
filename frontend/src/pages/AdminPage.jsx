@@ -5,7 +5,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 
-const AdminPage = ({ auth }) => {
+const AdminPage = () => {
   const [items, setItems] = useState([]);
   const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
@@ -13,9 +13,11 @@ const AdminPage = ({ auth }) => {
   const [confirmDeleteItemId, setConfirmDeleteItemId] = useState(null);
   const [confirmDeleteUsername, setConfirmDeleteUsername] = useState(null);
 
+  const token = localStorage.getItem("token");
+
   const config = {
     headers: {
-      Authorization: `Bearer ${auth.token}`,
+      Authorization: `Bearer ${token}`,
     },
   };
 

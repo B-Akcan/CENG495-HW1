@@ -1,8 +1,9 @@
-import React from "react";
 import { AppBar, Toolbar, Typography, Button, Container } from "@mui/material";
 import { Link } from "react-router-dom";
 
-const Navbar = ({ auth, handleLogout }) => {
+const Navbar = ({ handleLogout }) => {
+  const user = localStorage.getItem("user");
+  const isAdmin = localStorage.getItem("isAdmin");
 
   return (
     <AppBar position="sticky">
@@ -14,7 +15,7 @@ const Navbar = ({ auth, handleLogout }) => {
           <Button color="inherit" component={Link} to="/">
             Home
           </Button>
-          {auth.user ? (
+          {user ? (
             <>
               <Button color="inherit" component={Link} to="/user">
                 Profile
@@ -22,7 +23,7 @@ const Navbar = ({ auth, handleLogout }) => {
               <Button color="inherit" component={Link} to="/new-item">
                 New Item
               </Button>
-              {auth.isAdmin ? (
+              {isAdmin ? (
                 <Button color="inherit" component={Link} to="/admin">
                 Admin
                 </Button>

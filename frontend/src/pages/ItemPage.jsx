@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import {Typography,Box,Card,CardContent,TextField,Button,Rating,Divider,Alert,Stack,CircularProgress,Dialog,DialogTitle,DialogContent,DialogActions} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-const ItemPage = ({auth}) => {
+const ItemPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -20,6 +20,9 @@ const ItemPage = ({auth}) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
+
+  const user = localStorage.getItem("user");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     axios.get(`https://ceng-495-hw-1-steel.vercel.app/items/${id}`)
@@ -58,12 +61,12 @@ const ItemPage = ({auth}) => {
   }
 
   const handleSubmitRating = async () => {
-    if (!auth.user) return setError("You must be logged in to rate.");
+    if (!user) return setError("You must be logged in to rate.");
     try {
       const res = await axios.put(
         `https://ceng-495-hw-1-steel.vercel.app/items/${id}/ratings`,
         { rating: newRating },
-        { headers: { Authorization: `Bearer ${auth.token}` } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setRatings(setRatingsHelper(res.data));
       setNewRating(0);
@@ -92,12 +95,12 @@ const ItemPage = ({auth}) => {
   }
 
   const handleSubmitReview = async () => {
-    if (!auth.user) return setError("You must be logged in to review.");
+    if (!user) return setError("You must be logged in to review.");
     try {
       const res = await axios.put(
         `https://ceng-495-hw-1-steel.vercel.app/items/${id}/reviews`,
         { review: newReview },
-        { headers: { Authorization: `Bearer ${auth.token}` } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setReviews(setReviewsHelper(res.data));
       setNewReview("");
@@ -109,11 +112,11 @@ const ItemPage = ({auth}) => {
   };
 
   const handleDeleteItem = async () => {
-    if (!auth.user) return setError("You must be logged in to delete the item.");
+    if (!user) return setError("You must be logged in to delete the item.");
     try {
       await axios.delete(
         `https://ceng-495-hw-1-steel.vercel.app/items/${id}`,
-        { headers: { Authorization: `Bearer ${auth.token}` } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       navigate("/");
     } catch {
@@ -182,7 +185,7 @@ const ItemPage = ({auth}) => {
               </Typography>
             </Box>
 
-            {auth.user && auth.user === item.username && (
+            {user && user === item.username && (
               <>
                 <Button
                   variant="outlined"
@@ -240,7 +243,7 @@ const ItemPage = ({auth}) => {
         </Card>
       ))}
 
-      {auth.user && (
+      {user && (
         <>
           <Divider sx={{ my: 4 }} />
           <Typography variant="h6">Rate This Item</Typography>

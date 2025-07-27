@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {Container,Typography,TextField,Button,Grid,MenuItem,Select,InputLabel,FormControl,Snackbar,Alert} from "@mui/material";
 import axios from "axios";
 
-const NewItem = ({ auth }) => {
+const NewItem = () => {
   const [newItem, setNewItem] = useState({
     name: "",
     price: 0,
@@ -25,9 +25,11 @@ const NewItem = ({ auth }) => {
   const showSize = newItem.category === "Running Shoes";
   const showMaterial = newItem.category === "Antique Furniture" || newItem.category === "Running Shoes";
 
+  const token = localStorage.getItem("token");
+
   const config = {
     headers: {
-      Authorization: `Bearer ${auth.token}`,
+      Authorization: `Bearer ${token}`,
     },
   };
 
