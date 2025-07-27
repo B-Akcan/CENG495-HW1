@@ -17,10 +17,6 @@ function App() {
   const [auth, setAuth] = useState({ user: null, token: null, isAdmin: null, phoneNumber: null });
 
   useEffect(() => {
-    document.title = 'E-Commerce App';
-  }, []);
-
-  useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (storedToken) {
       axios
